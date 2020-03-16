@@ -1,0 +1,42 @@
+version: '2'
+services: 
+    speed_park_php_fpm:
+        container_name: speedParkPhpFpm
+        #image: bitnami/php-fpm
+        #image : php:fpm-alpine3.11
+        build : ./dockerfiles/phpfpm
+        volumes:                
+            - ./volumes/ebay:/usr/share/nginx/html
+            - ./confs/php-fpm:/usr/local/etc/php
+            #- ./confs/php-fpm/php.ini:/opt/bitnami/php/etc/php.ini
+        ports:
+            - 9000:9000
+        links:
+            - speedParkMariaDb
+    
+    speedParkNginx:
+        container_name: speedParkNginx
+        image: nginx:stable-alpine 
+        volumes:                
+            - ./volumes/ebay:/usr/share/nginx/html
+            - ./confs/nginx/conf:/etc/nginx/conf.d
+        ports:
+            - 82:80
+        links: 
+            - speed_park_php_fpm
+
+    speedParkMariaDb:            
+        container_name: speedParkMariaDb
+        image: mariadb
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: 34erDFcv
+            MYSQL_ROOT_HOST: "%"
+        ports:
+            - 6033:3306 
+        volumes:            
+            - ./volumes/mariadb:/var/lib/mysql            
+            - ./confs/mysql/my.cnf:/etc/mysql/my.cnf
+        command: 
+            --innodb-flush-method=littlesync
+    

@@ -1,0 +1,223 @@
+body {
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+.orderProcessBlock {
+    padding: 5px;
+    margin:5px;
+    border-radius: 5px;
+    border:1px solid #87766C;
+    background-color: #F8F8F8;
+    -webkit-box-shadow: 10px 10px 10px -3px rgba(163,163,163,0.8);
+    -moz-box-shadow: 10px 10px 10px -3px rgba(163,163,163,0.8);
+    box-shadow: 10px 10px 10px -3px rgba(163,163,163,0.8);
+}
+
+.orderItemsBlack{
+    padding: 10px;
+    margin:10px;
+    border-radius: 5px;
+    border:1px solid #87766C;
+    background-color: #DAE7D0;
+    -webkit-box-shadow: 10px 10px 10px -3px rgba(163,163,163,0.8);
+    -moz-box-shadow: 10px 10px 10px -3px rgba(163,163,163,0.8);
+    box-shadow: 10px 10px 10px -3px rgba(163,163,163,0.8);
+}
+
+.itemDescBlock {
+    font-size: 20px;
+}
+.searchDetail {
+    margin : 10px;
+    border: 1px solid #BDC3C7;
+    border-radius: 5px;
+    background-color: #FAFAFA;
+    -webkit-box-shadow: 10px 10px 10px -3px rgba(163,163,163,0.8);
+    -moz-box-shadow: 10px 10px 10px -3px rgba(163,163,163,0.8);
+    box-shadow: 10px 10px 10px -3px rgba(163,163,163,0.8);
+
+}
+
+@page page{
+    size:11cm 7.62cm;
+}
+@media print {
+    .page {
+        margin: 0;
+        box-shadow: 0;
+        padding:15px;
+       /* page-break-before: always;
+        page-break-after: always;*/
+    }
+
+}
+.page-break{
+    height:0; page-break-before:always; margin:0; border-top:none;
+}
+
+.page {
+    page:page;
+    background: white;
+    box-sizing: border-box;
+    display: block;
+    margin: 0 auto;
+    font-size: 16px;
+    box-shadow: 0 0 0.2cm rgba(0,0,0,0.5);
+    padding:15px;
+    width: 11cm;
+    height: 7.62cm;
+}
+
+.selectStyle {
+    padding:5px;
+    border-radius: 10px;
+    height: 30px;
+    color: #222222;
+}
+
+.padding10 {
+    padding: 10px;
+}
+
+.show-grid {
+    margin-bottom: 15px;
+}
+
+.show-grid [class^="col-"] {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: #eee;
+    background-color: rgba(86,61,124,.15);
+    border: 1px solid #ddd;
+    border: 1px solid rgba(86,61,124,.2);
+}
+
+.recordInput {
+    border-radius: 5px;
+    padding: 3px;
+    margin: 0 10px 0 10px;
+    border: 1px solid #ccc;
+}
+
+/**處理訂單**/
+.process-orderHead {
+    font-size: 16px;
+    font-weight: bolder;
+}
+.processOrderAccount {
+    width: 50%;
+    display: inline-block;
+    vertical-align: top;
+    right:60px;
+    position: absolute;
+    text-align: right;
+}
+
+
+/**
+列印定單
+ */
+.addressOrder {
+    text-align: right;
+    font-size: 20px;
+    font-weight: bolder;
+}
+.addressStore {
+    margin-top: -20px;
+}
+.sendAndReceiverLabel {
+    display: inline-block;
+    width:1.45cm;
+    text-align: right;
+    vertical-align:top;
+    font-weight: bolder;
+}
+.sendAndReceiverContent {
+    display: inline-block;
+    width:8.55cm;
+    vertical-align:top;
+}
+.storeHeight {
+    font-size: 14px;
+    height:80px;
+}
+.clientHeight {
+    font-size: 15px;
+    height:160px;
+}
+
+/*TrackingNumber*/
+.trackingNumberBlock {
+    width: 60%;
+    margin-left:20px;
+}
+
+
+/* Search AND OrderList */
+.buyerMemoBlock{
+    border-radius: 4px;
+    border :1px solid #bdc3c7;
+    background-color: #F5D76E ;
+    padding:5px;
+    margin: 5px 0 5px 0;
+    word-break: keep-all;
+}
+.tableTitleBlock {
+    display: inline-block;
+    width: 75px;
+}
+.tableTitleBlock2 {
+    display: inline-block;
+    width: 40px;
+}
+.sndInformation {
+    width:33%;
+}
+.fstInformation {
+    width:45%;
+}
+.fstImgBlock{
+    width:10%;
+}
+.imgWidth {
+    width:140px;
+}
+.fstInformationFont {
+    font-size: 16px;
+}
+.orderIdFontSize {
+    font-size: 18px;
+}
+
+/**  如果有賣家memo更新**/
+.selfMemoUpdate {
+    border-radius: 4px;
+    border :3px solid #c7be24;
+    /*background-color: #F5D76E ;*/
+    padding:5px;
+    margin: 5px 0 5px 0;
+    word-break: keep-all;
+}
+
+/* if ignore update*/
+.ignoreUpdateEnable {
+
+}
+
+.specData{
+    margin: 5px;
+    padding: 5px;
+    background-color: #DADFE1;
+    border-radius: 5px;
+    border: 1px solid #BDC3C7;
+}
+
+/* Duty Record*/
+#dutyRecordTable tr td {
+    vertical-align: middle;
+}
+
+/* Add bootstrap label color */
+.label-purple {
+    background-color: #cc00cc;
+}
