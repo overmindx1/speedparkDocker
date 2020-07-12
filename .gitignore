@@ -1,4 +1,5 @@
 /volumes/ebay/vendor
+/volumes/mariadb
 /node_modules
 Homestead.yaml
 Homestead.json
