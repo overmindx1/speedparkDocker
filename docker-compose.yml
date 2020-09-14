@@ -27,8 +27,7 @@ services:
 
     speedParkMariaDb:            
         container_name: speedParkMariaDb
-        image: mariadb
-        restart: always
+        image: mariadb:10.4
         environment:
             MYSQL_ROOT_PASSWORD: 34erDFcv
             MYSQL_ROOT_HOST: "%"
