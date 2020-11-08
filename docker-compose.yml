@@ -7,7 +7,7 @@ services:
         build : ./dockerfiles/phpfpm
         volumes:                
             - ./volumes/ebay:/usr/share/nginx/html
-            - ./confs/php-fpm:/usr/local/etc/php
+            #- ./confs/php-fpm:/usr/local/etc/php
             #- ./confs/php-fpm/php.ini:/opt/bitnami/php/etc/php.ini
         ports:
             - 9000:9000
