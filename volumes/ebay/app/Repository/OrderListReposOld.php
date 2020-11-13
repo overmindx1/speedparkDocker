@@ -17,7 +17,7 @@ use App\Ebay\Query;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
-class OrderListRepos {
+class OrderListReposOld {
 
     /**
      * @const   搜尋的選項
