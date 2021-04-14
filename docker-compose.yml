@@ -9,8 +9,8 @@ services:
             - ./volumes/ebay:/usr/share/nginx/html
             #- ./confs/php-fpm:/usr/local/etc/php
             #- ./confs/php-fpm/php.ini:/opt/bitnami/php/etc/php.ini
-        ports:
-            - 9000:9000
+        #ports:
+            #- 9000:9000
         links:
             - speedParkMariaDb
     
@@ -27,7 +27,8 @@ services:
 
     speedParkMariaDb:            
         container_name: speedParkMariaDb
-        image: mariadb:10.4
+        image: mariadb
+        restart: always
         environment:
             MYSQL_ROOT_PASSWORD: 34erDFcv
             MYSQL_ROOT_HOST: "%"
@@ -38,4 +39,3 @@ services:
             - ./confs/mysql/my.cnf:/etc/mysql/my.cnf
         command: 
             --innodb-flush-method=littlesync
-    

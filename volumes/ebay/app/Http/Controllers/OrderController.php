@@ -111,6 +111,7 @@ class OrderController extends Controller
         try {
             $ipn = new PaypalIPNListener();
             $ipn->use_sandbox = false;
+            $ipn->use_ssl = false;
             $verified = $ipn->processIpn();
             $data['verified'] = 'UNVERIFIED';
             if($verified == 1) {
