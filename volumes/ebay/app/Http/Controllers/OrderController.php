@@ -8,8 +8,11 @@ use PayPal\PayPalAPI\TransactionSearchReq;
 use PayPal\PayPalAPI\TransactionSearchRequestType;
 use PayPal\Service\PayPalAPIInterfaceServiceService;
 use App\Ebay\eBaySession;
+use Illuminate\Http\Request;
 use Fahim\PaypalIPN\PaypalIPNListener;
 use App\Repository\OrderListRepos;
+use App\LineNotifyToken;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -20,7 +23,7 @@ class OrderController extends Controller
 
     public function __construct(OrderListRepos $orderRepos)
     {
-        $this->middleware('auth')->except('getIpn');
+        $this->middleware('auth')->except(['getIpn' , 'lineNotifyCallBack']);
         $this->orderRepos = $orderRepos;
     }
 
@@ -121,14 +124,30 @@ class OrderController extends Controller
             \Log::info("-----new payment-----");
             \Log::info($report);
             $order = $this->orderRepos->insertIpnOrder($data);
-            //\Log::info($order);
-            //\Log::info($data);
-        } catch ( \Illuminate\Database\QueryException  $e){
-            $to = ['speedparkpt@gmail.com' , 'overmindx@gmail.com'];
-            \Log::error([$e->getMessage() , $e->getSql()]);           
-            \Mail::raw($e->__toString() , function($mail) use ( $to ) {
-               $mail->to($to)->subject('系統出錯報告,有單無法寫入');
+            
+        } catch ( \Exception  $e){
+            \Log::error([$e->getMessage() ]);
+            // 送出賴
+            $allToken = LineNotifyToken::all();
+            $postData = json_encode(\Request::all());
+            $allToken->map(function($item ,$key) use ($postData) {
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: Bearer '.$item->token]  ); // Inject the token into the header
+                curl_setopt($ch, CURLOPT_URL, "https://notify-api.line.me/api/notify");
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+                    'message'    => "\r\n\r\nPaypal IPN Failed , \r\n\r\n".$postData."\r\n\r\n" . date('Y-m-d h:i:s')                   
+                ])); 
+                curl_setopt($ch , CURLOPT_RETURNTRANSFER ,true);
+                $output = curl_exec($ch); 
+                $getInfo = curl_getinfo($ch);
+                if($getInfo['http_code'] == 401) {
+                    LineNotifyToken::destroy($item->id);
+                }
+                curl_close($ch);
             });
+            
+            echo "IpnProcessError!";
         }
     }
 
@@ -148,17 +167,12 @@ class OrderController extends Controller
         try {
             /* wrap API method calls on the service object with a try catch */
             $transactionSearchResponse = $paypalService->TransactionSearch($tranSearchReq);
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             dd($ex);
             exit;
         }
         if(isset($transactionSearchResponse)) {
-            //echo "<table>";
-            //echo "<tr><td>Ack :</td><td><div id='Ack'>$transactionSearchResponse->Ack</div> </td></tr>";
-            //echo "</table>";
-            //echo "<pre>";
-            //print_r($transactionSearchResponse);
-            //echo "</pre>";
+          
             if($transactionSearchResponse->Ack == 'Success') {
                 $paymentList = collect($transactionSearchResponse->PaymentTransactions);
                 $groupBy = $paymentList->groupBy('Status');
@@ -179,70 +193,63 @@ class OrderController extends Controller
         try {
             /* wrap API method calls on the service object with a try catch */
             $transDetailsResponse = $paypalService->GetTransactionDetails($request);
-        } catch (Exception $ex) {
+        } catch (\Exception $ex) {
             dd($ex);
             exit;
         }
         if(isset($transDetailsResponse)) {
             dd($transDetailsResponse);
-            //echo "<table>";
-            //echo "<tr><td>Ack :</td><td><div id='Ack'>$transDetailsResponse->Ack</div> </td></tr>";
-            //echo "</table>";
-            //echo "<pre>";
-            //print_r($transDetailsResponse);
-            //echo "</pre>";
-
         }
     }
 
-    /*public function showIndex()
-    {
-
-        $cc = '<?xml version="1.0" encoding="utf-8"?>
-                <GetOrdersRequest xmlns="urn:ebay:apis:eBLBaseComponents">
-                  <RequesterCredentials>
-                    <eBayAuthToken>'.$this->authEbay['userToken_'].'</eBayAuthToken>
-                  </RequesterCredentials>
-                  <CreateTimeFrom>'.date('c' , strtotime("-1 day")).'</CreateTimeFrom>
-                  <CreateTimeTo>'.date('c').'</CreateTimeTo>
-                  <OrderRole>Seller</OrderRole>
-                  <OrderStatus>All</OrderStatus>
-                </GetOrdersRequest>';
-
-        $response = $this->eBaySession->sendHttpRequest($cc);
-        $xml = simplexml_load_string($response);
-        dd($xml->OrderArray->Order[0]);
-        return view( 'seller.index', ['xml' => $xml]);
+        
+    /**
+     * lineNotifyCallBack 註冊LineNotify
+     *
+     * @param  Request $request
+     * @return void
+     */
+    public function lineNotifyCallBack(Request $request){
+        try {
+            $input = $request->all();
+            if(isset($input['state'])) {
+                if($input['state'] == 'speedpark') {
+                    
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_HEADER, false);
+                    curl_setopt($ch, CURLOPT_NOBODY , false);
+                    curl_setopt($ch, CURLOPT_URL, "https://notify-bot.line.me/oauth/token");
+                    curl_setopt($ch, CURLOPT_POST, true);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+                        'grant_type'    => 'authorization_code',
+                        'code'          => $input['code'],
+                        'redirect_uri'  => 'http://ebay.hapopo.com:82/ipnLineNotifyCb',
+                        'client_id'     => 'OoDWSHFmhmnJuyTEYvf6PU',
+                        'client_secret' => 'aVIr4GIXc0y4fra4zuRBWK6VyJHe0rudrtGqjlxXMdl'
+                    ])); 
+                    curl_setopt($ch , CURLOPT_RETURNTRANSFER ,true);
+                    $output = curl_exec($ch); 
+                    if($output !== false) {
+                        $getInfo = curl_getinfo($ch);
+                        if($getInfo['http_code'] == 200) {
+                            $outputObj = json_decode($output ,true);
+                            $lineToken = new LineNotifyToken;
+                            $lineToken->token = $outputObj['access_token'];
+                            $lineToken->save();
+                            return 'Line Notify 成功註冊!';
+                        }
+                        return 'Line Notify 註冊失敗!';
+                    }
+                    curl_close($ch);
+                }
+                return 'Line Notify 註冊回傳失敗!';
+            }
+            return  'Line Notify Callback 失敗';
+            
+        } catch (\Throwable $th) {
+            return $th->getMessage();
+        }
     }
-
-    public function showIndex2()
-    {
-
-        $this->authEbay = config('ebay.joeyangair2010');
-        $this->eBaySession = new eBaySession(   $this->authEbay['userToken_'],
-            $this->authEbay['devID_'],
-            $this->authEbay['appID_'],
-            $this->authEbay['certID_'],
-            $this->authEbay['serverUrl_'],
-            $this->authEbay['compatabilityLevel'],
-            0,
-            'GetOrderTransactions');
-
-        $cc = '<?xml version="1.0" encoding="utf-8"?>
-<GetOrderTransactionsRequest xmlns="urn:ebay:apis:eBLBaseComponents">
-  <RequesterCredentials>
-    <eBayAuthToken>'.$this->authEbay['userToken_'].'</eBayAuthToken>
-  </RequesterCredentials>
-  <OrderIDArray>
-    <OrderID>151010-070124</OrderID>
-  </OrderIDArray>
-</GetOrderTransactionsRequest>';
-
-        $response = $this->eBaySession->sendHttpRequest($cc);
-        $xml = simplexml_load_string($response);
-        dd($xml);
-    }*/
-
 
 
 }

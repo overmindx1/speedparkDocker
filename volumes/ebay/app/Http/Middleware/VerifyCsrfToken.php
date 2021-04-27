@@ -15,6 +15,7 @@ class VerifyCsrfToken extends BaseVerifier
         //
         'ipn' ,
         'v1/*',
-        'updateAddress'
+        'updateAddress',
+        'ipnLineNotifyCb'
     ];
 }

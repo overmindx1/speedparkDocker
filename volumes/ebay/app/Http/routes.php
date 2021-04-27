@@ -71,6 +71,7 @@ Route::get('/statistics'    , 'OrderController@showStatisticsPage');
 Route::get('/countryBuyCount' , function(){
     return view('countryBuyCount');
 });
+
 //Ebay
 
 Route::get('/eBayTxnId' , 'OrderController@showEbayUpdateTxnId');
@@ -83,12 +84,8 @@ Route::get('/addressInputs' , function(){
 Route::get('/addressInputData' , 'AjaxAddressController@getRealTimeIpnOrder' );
 Route::post('/updateAddress' , 'AjaxAddressController@getUpdateAddress' );
 
-Route::get('mail' , function(){
-    $mail = \Mail::raw('測試Mail' , function( $message) {
-        $message->to('overmindx@gmail.com', '測試Mail測試Mail測試Mail')->subject('訂單成立通知');
-    });
-    // dd($mail);
-});
+//LineNotify
+Route::get('/ipnLineNotifyCb' , 'OrderController@lineNotifyCallBack');
 
 Route::get('test2' , function(){
     /*$config = config('ebay.joeyangair2011');

@@ -55,7 +55,7 @@ return [
     |
     */
 
-    'from' => ['address' => "service@superfm99-1.com.tw", 'name' => "eBay Paypal System Notify"],
+    'from' => ['address' => "ebay.speedpark@zohomail.com", 'name' => "eBay Paypal System Notify"],
 
     /*
     |--------------------------------------------------------------------------
