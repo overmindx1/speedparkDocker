@@ -6,7 +6,7 @@ services:
         #image : php:fpm-alpine3.11
         build : ./dockerfiles/phpfpm
         volumes:                
-            - ./volumes/ebay:/usr/share/nginx/html
+            - ./volumes/ebay:/usr/share/nginx/ebay
             #- ./confs/php-fpm:/usr/local/etc/php
             #- ./confs/php-fpm/php.ini:/opt/bitnami/php/etc/php.ini
         #ports:
@@ -18,10 +18,10 @@ services:
         container_name: speedParkNginx
         image: nginx:stable-alpine 
         volumes:                
-            - ./volumes/ebay:/usr/share/nginx/html
+            - ./volumes/ebay:/usr/share/nginx/ebay
             - ./confs/nginx/conf:/etc/nginx/conf.d
         ports:
-            - 82:80
+            - 80:80
         links: 
             - speed_park_php_fpm
 
