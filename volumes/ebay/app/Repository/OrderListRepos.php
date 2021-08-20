@@ -956,9 +956,16 @@ class OrderListRepos {
                        ->get();
 
         $object = new \stdClass();
-        $object->firstId = $result->first()->id;
-        $object->lastId  = $result->last()->id;
-        $object->count   = $result->count();
+        $count = $result->count();
+        // 避免出錯
+        if($count > 0 ) {
+            $object->firstId = $result->first()->id;
+            $object->lastId  = $result->last()->id;
+        } else {
+            $object->firstId = 0;
+            $object->lastId  = 0; 
+        }
+        $object->count   = $count;
 
         return $object;
     }
